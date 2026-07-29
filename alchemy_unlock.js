@@ -1,7 +1,7 @@
 // Alchemy Mod - Unlock Elements Through Gameplay
 
-// Starting unlocked elements
-var alchemyStartingElements = [
+// Starting elements
+var alchemyStart = [
     "sand",
     "dirt",
     "water",
@@ -9,18 +9,19 @@ var alchemyStartingElements = [
     "oxygen"
 ];
 
+// Create unlock list
 if (!settings.alchemyUnlocked) {
     settings.alchemyUnlocked = {};
 }
 
 // Unlock starting elements
-for (var i = 0; i < alchemyStartingElements.length; i++) {
-    settings.alchemyUnlocked[alchemyStartingElements[i]] = true;
+for (var i = 0; i < alchemyStart.length; i++) {
+    settings.alchemyUnlocked[alchemyStart[i]] = true;
 }
+
 
 // Hide locked elements
 for (var element in elements) {
-
     if (settings.alchemyUnlocked[element]) {
         elements[element].hidden = false;
     }
@@ -30,14 +31,14 @@ for (var element in elements) {
 }
 
 
-// Unlock elements when reactions create them
-runAfterLoad(function() {
+// Unlock elements when they are made
+var oldChangePixel = changePixel;
 
-    var oldChangePixel = changePixel;
+changePixel = function(pixel, element) {
 
-    changePixel = function(pixel, element) {
+    if (elements[element]) {
 
-        if (elements[element] && !settings.alchemyUnlocked[element]) {
+        if (!settings.alchemyUnlocked[element]) {
 
             settings.alchemyUnlocked[element] = true;
             elements[element].hidden = false;
@@ -48,8 +49,7 @@ runAfterLoad(function() {
 
             saveSettings();
         }
+    }
 
-        return oldChangePixel(pixel, element);
-    };
-
-});
+    return oldChangePixel(pixel, element);
+};
