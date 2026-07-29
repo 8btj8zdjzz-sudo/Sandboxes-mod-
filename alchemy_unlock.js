@@ -1,13 +1,21 @@
-// Alchemy Mod - Start with basic elements and unlock as discovered
+// Alchemy Mod - Unlock Elements Through Gameplay
+
+// Starting unlocked elements
+var alchemyStartingElements = [
+    "sand",
+    "dirt",
+    "water",
+    "fire",
+    "oxygen"
+];
 
 if (!settings.alchemyUnlocked) {
-    settings.alchemyUnlocked = {
-        sand: true,
-        dirt: true,
-        water: true,
-        fire: true,
-        oxygen: true
-    };
+    settings.alchemyUnlocked = {};
+}
+
+// Unlock starting elements
+for (var i = 0; i < alchemyStartingElements.length; i++) {
+    settings.alchemyUnlocked[alchemyStartingElements[i]] = true;
 }
 
 // Hide locked elements
@@ -16,31 +24,32 @@ for (var element in elements) {
     if (settings.alchemyUnlocked[element]) {
         elements[element].hidden = false;
     }
-    else if (elements[element].category !== "tools") {
+    else if (elements[element].category != "tools") {
         elements[element].hidden = true;
     }
 }
 
-// Unlock elements when they are created
+
+// Unlock elements when reactions create them
 runAfterLoad(function() {
 
-    let oldCreatePixel = createPixel;
+    var oldChangePixel = changePixel;
 
-    createPixel = function(element, x, y) {
+    changePixel = function(pixel, element) {
 
         if (elements[element] && !settings.alchemyUnlocked[element]) {
 
             settings.alchemyUnlocked[element] = true;
             elements[element].hidden = false;
 
-            if (typeof createElementButton === "function") {
+            if (typeof createElementButton == "function") {
                 createElementButton(element);
             }
 
             saveSettings();
         }
 
-        return oldCreatePixel(element, x, y);
+        return oldChangePixel(pixel, element);
     };
 
 });
